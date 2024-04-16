@@ -124,11 +124,6 @@ extension DirtyJSON {
             case nil:
                 // encounter end
                 switch peekPrevResult.value {
-                case "{", "[": // encounter '...{' or '...['
-                    // delete it
-                    iterator.array[peekPrevResult.index] = ""
-                    // and pop this token from stack
-                    _ = stack.popLast()
                 case ":", ",": // encounter '...:' or '...,'
                     // delete it
                     iterator.array[peekPrevResult.index] = ""

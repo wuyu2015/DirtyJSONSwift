@@ -40,10 +40,13 @@ extension DirtyJSON {
                 inObjectValue = false
             case "}":
                 // encounter '}'
-                switch peekPrevResult.value {
+                switch peekPrevResult.lastChar {
                 case ",":
                     // encounter ',}', delete the trailing comma
                     iterator.array[peekPrevResult.index] = ""
+                case ":":
+                    // encounter '...:', change it to '...:null'
+                    iterator.array[peekPrevResult.index] += "null"
                 case nil:
                     // encounter something like '   }', delete it
                     for i in 0...iterator.index {
@@ -70,7 +73,7 @@ extension DirtyJSON {
                     iterator.set("")
                     break
                 }
-                switch peekPrevResult.value {
+                switch peekPrevResult.lastChar {
                 case ",":
                     // encounter ',]', delete the trailing comma
                     iterator.array[peekPrevResult.index] = ""
@@ -95,7 +98,7 @@ extension DirtyJSON {
                 inObjectValue = false
             case ":":
                 // encounter ':'
-                if stack.isEmpty || stack.last!.value != "{" || inObjectValue || peekPrevResult.value == "{" {
+                if stack.isEmpty || stack.last!.value != "{" || inObjectValue || peekPrevResult.lastChar == "{" {
                     // encounter ':' outside of object or when looking for value or the object is empty, delete it
                     iterator.set("")
                     break
@@ -110,7 +113,7 @@ extension DirtyJSON {
                     iterator.set("")
                     break
                 }
-                switch peekPrevResult.value {
+                switch peekPrevResult.lastChar {
                 case "{", "[", ":", ",":
                     // encounter '{,' or '[,' or ':,' or ',,', delete it
                     iterator.set("")
@@ -143,7 +146,7 @@ extension DirtyJSON {
                 }
             case nil:
                 // encounter end
-                switch peekPrevResult.value {
+                switch peekPrevResult.lastChar {
                 case ":": // encounter '...:'
                     // change it to '...:null';
                     iterator.array[peekPrevResult.index] = ":null"

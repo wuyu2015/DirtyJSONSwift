@@ -26,6 +26,8 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix("{]}"), "{}")
         XCTAssertEqual(DirtyJSON.fix("{:}"), "{}")
         XCTAssertEqual(DirtyJSON.fix("{,}"), "{}")
+        
+        XCTAssertEqual(DirtyJSON.fix("{a:}"), "{\"a\":null}")
 
         XCTAssertEqual(DirtyJSON.fix("{\"a\": 1}"), "{\"a\":1}")
         XCTAssertEqual(DirtyJSON.fix("{'a': 1}"), "{\"a\":1}")

@@ -34,12 +34,12 @@ extension DirtyJSON {
         
         func peekPrev() -> Token {
             for i in stride(from: index - 1, through: 0, by: -1) {
-                let value = array[i]
+                let value = array[i].trimmingCharacters(in: .whitespacesAndNewlines)
                 if (!value.isEmpty && !DirtyJSON.isWhitespace(value)) {
-                    return Token(index: i, value: value)
+                    return Token(index: i, value: value, lastChar: value.last!.description)
                 }
             }
-            return Token(index: -1, value: nil)
+            return Token(index: -1, value: nil, lastChar: nil)
         }
         
         func get() -> String {

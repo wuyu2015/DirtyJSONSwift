@@ -30,6 +30,11 @@ extension DirtyJSON {
                 inObjectValue = false
             case "[":
                 // encounter '['
+                if (inObjectKey) {
+                    // encounter '{[', delete '['
+                    iterator.set("")
+                    break
+                }
                 stack.append((index: iterator.index, value: "["))
                 inObjectKey = false
                 inObjectValue = false
@@ -60,6 +65,11 @@ extension DirtyJSON {
                 inObjectValue = false
             case "]":
                 // encounter ']'
+                if (inObjectKey) {
+                    // encounter '{]', delete ']'
+                    iterator.set("")
+                    break
+                }
                 switch peekPrevResult.value {
                 case ",":
                     // encounter ',]', delete the trailing comma
@@ -85,8 +95,8 @@ extension DirtyJSON {
                 inObjectValue = false
             case ":":
                 // encounter ':'
-                if stack.isEmpty || stack.last!.value != "{" || inObjectValue {
-                    // encounter ':' outside of object or when looking for value, delete it
+                if stack.isEmpty || stack.last!.value != "{" || inObjectValue || peekPrevResult.value == "{" {
+                    // encounter ':' outside of object or when looking for value or the object is empty, delete it
                     iterator.set("")
                     break
                 }
@@ -95,6 +105,11 @@ extension DirtyJSON {
                 inObjectValue = true
             case ",":
                 // encounter ','
+                if (inObjectKey) {
+                    // encounter '{,', delete ','
+                    iterator.set("")
+                    break
+                }
                 switch peekPrevResult.value {
                 case "{", "[", ":", ",":
                     // encounter '{,' or '[,' or ':,' or ',,', delete it

@@ -124,7 +124,10 @@ extension DirtyJSON {
             case nil:
                 // encounter end
                 switch peekPrevResult.value {
-                case ":", ",": // encounter '...:' or '...,'
+                case ":": // encounter '...:'
+                    // change it to '...:null';
+                    iterator.array[peekPrevResult.index] = ":null"
+                case ",": // encounter '...,'
                     // delete it
                     iterator.array[peekPrevResult.index] = ""
                 default:

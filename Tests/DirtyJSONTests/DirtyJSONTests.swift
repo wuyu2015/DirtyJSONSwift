@@ -47,6 +47,10 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix("},{,key:：/*multiline\ncomment\nhere*/ “//value\",】， // this is an abnormal JSON"), "{\"key\":\"//value\"}")
     }
     
+    func testIncomplete() {
+        XCTAssertEqual(DirtyJSON.fix("{a: "), "{\"a\":null}")
+    }
+    
     func testFix1() {
         XCTAssertEqual(DirtyJSON.fix("{ test: 'this is a test', 'number': 1.23e10 }"), "{\"test\":\"this is a test\",\"number\":1.23e10}")
     }
@@ -113,6 +117,7 @@ final class DirtyJSONTests: XCTestCase {
 
     static var allTests = [
         ("test1", test1),
+        ("testIncomplete", testIncomplete),
         ("testFix1", testFix1),
         ("testFix2", testFix2),
         ("testFix3", testFix3),

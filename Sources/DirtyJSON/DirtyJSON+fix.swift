@@ -19,7 +19,7 @@ extension DirtyJSON {
                 case "\"", "}", ":", nil:
                         break;
                 case "{", "[", "]", ",":
-                        // encounter '{{' or '{[' or '{,' , delete the last char
+                        // {' or '[' or ']' or ',' is not allow when inObjectKey
                         iterator.set("");
                         needContinue = true;
                 default:
@@ -35,7 +35,7 @@ extension DirtyJSON {
                 continue
             }
 
-            // not inObjectKey
+            // not inObjectKey, or token is in '"}:'
             switch token {
             case "\"":
                 // encounter quote
@@ -49,10 +49,15 @@ extension DirtyJSON {
                 if (index0 == index1) {
                     // not found
                     iterator.set("");
-                } else {
+                } else if (!iterator.done()) {
                     // found, delete '"' and append '"' to last char
                     iterator.array[index1 - 1] = iterator.array[index1 - 1] + "\"";
                     iterator.set("");
+                } else {
+                    // end of iterator
+                    if (iterator.get() != "\"") {
+                        iterator.array[iterator.array.count - 1] = iterator.array.last! + "\"";
+                    }
                 }
             case "{":
                 // encounter '{'
@@ -271,14 +276,14 @@ extension DirtyJSON {
                 iterator.set("\\t")
             case "\"":
                 // encounter quote
-                if (hasTokenAfterQuote(iterator)) {
+                if (hasTrailingTokenOrEnd(iterator)) {
                     // string end
                     return
                 }
                 iterator.set("\\\"")
             case "'", "`", "“", "”", "‘", "’", "「", "」", "﹁", "﹂", "『", "』", "﹃", "﹄":
                 // encounter abnormal quote, and there is a trailing token, change it to '"'
-                if (hasTokenAfterQuote(iterator)) {
+                if (hasTrailingTokenOrEnd(iterator)) {
                     iterator.set("\"");
                     return
                 }
@@ -328,7 +333,7 @@ extension DirtyJSON {
         }
     }
 
-    static func hasTokenAfterQuote(_ iterator: StringIterator) -> Bool {
+    static func hasTrailingTokenOrEnd(_ iterator: StringIterator) -> Bool {
         for index in iterator.index + 1 ..< iterator.array.count {
             let value = iterator.array[index]
             if isWhitespace(value) {
@@ -341,6 +346,7 @@ extension DirtyJSON {
                 return false
             }
         }
-        return false
+        // end of iterator
+        return true
     }
 }

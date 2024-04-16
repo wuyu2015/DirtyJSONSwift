@@ -29,18 +29,117 @@ final class DirtyJSONTests: XCTestCase {
     }
     
     func testFixChar2() {
-        XCTAssertEqual(DirtyJSON.fix("{{"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{}"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{]"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{:"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{,"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{\""), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{'"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("{`"), "{}");
-        XCTAssertEqual(DirtyJSON.fix("[}"), "[]");
-        XCTAssertEqual(DirtyJSON.fix("[]"), "[]");
-        XCTAssertEqual(DirtyJSON.fix("[["), "[[]]");
-        XCTAssertEqual(DirtyJSON.fix("}}"), "");
+        // start from {
+        XCTAssertEqual(DirtyJSON.fix("{{"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{}"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{]"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{:"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{,"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{\""), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{'"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("{`"), "{}")
+        
+        // start from [
+        XCTAssertEqual(DirtyJSON.fix("[{"), "[{}]")
+        XCTAssertEqual(DirtyJSON.fix("[}"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("[]"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("[:"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("[,"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("[\""), "[]")
+        XCTAssertEqual(DirtyJSON.fix("['"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("[`"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("[0"), "[0]")
+        XCTAssertEqual(DirtyJSON.fix("[9"), "[9]")
+        XCTAssertEqual(DirtyJSON.fix("[-"), "[\"-\"]")
+        XCTAssertEqual(DirtyJSON.fix("[."), "[\".\"]")
+        XCTAssertEqual(DirtyJSON.fix("[a"), "[\"a\"]")
+        XCTAssertEqual(DirtyJSON.fix("[【"), "[[]]")
+        XCTAssertEqual(DirtyJSON.fix("[："), "[]")
+        
+        // start from }
+        XCTAssertEqual(DirtyJSON.fix("}{"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("}}"), "")
+        XCTAssertEqual(DirtyJSON.fix("}]"), "")
+        XCTAssertEqual(DirtyJSON.fix("}:"), "")
+        XCTAssertEqual(DirtyJSON.fix("},"), "")
+        XCTAssertEqual(DirtyJSON.fix("}\""), "")
+        XCTAssertEqual(DirtyJSON.fix("}'"), "")
+        XCTAssertEqual(DirtyJSON.fix("}`"), "")
+        XCTAssertEqual(DirtyJSON.fix("}0"), "0")
+        XCTAssertEqual(DirtyJSON.fix("}9"), "9")
+        XCTAssertEqual(DirtyJSON.fix("}-"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("}."), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix("}a"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("}【"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("}："), "")
+        
+        // start from ]
+        XCTAssertEqual(DirtyJSON.fix("]{"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("]}"), "")
+        XCTAssertEqual(DirtyJSON.fix("]]"), "")
+        XCTAssertEqual(DirtyJSON.fix("]:"), "")
+        XCTAssertEqual(DirtyJSON.fix("],"), "")
+        XCTAssertEqual(DirtyJSON.fix("]\""), "")
+        XCTAssertEqual(DirtyJSON.fix("}'"), "")
+        XCTAssertEqual(DirtyJSON.fix("]`"), "")
+        XCTAssertEqual(DirtyJSON.fix("]0"), "0")
+        XCTAssertEqual(DirtyJSON.fix("]9"), "9")
+        XCTAssertEqual(DirtyJSON.fix("]-"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("]."), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix("]a"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("]【"), "[]")
+        XCTAssertEqual(DirtyJSON.fix("]："), "")
+        
+        // start from :
+        XCTAssertEqual(DirtyJSON.fix(":{"), "{}")
+        XCTAssertEqual(DirtyJSON.fix(":}"), "")
+        XCTAssertEqual(DirtyJSON.fix(":]"), "")
+        XCTAssertEqual(DirtyJSON.fix("::"), "")
+        XCTAssertEqual(DirtyJSON.fix(":,"), "")
+        XCTAssertEqual(DirtyJSON.fix(":\""), "")
+        XCTAssertEqual(DirtyJSON.fix("}'"), "")
+        XCTAssertEqual(DirtyJSON.fix(":`"), "")
+        XCTAssertEqual(DirtyJSON.fix(":0"), "0")
+        XCTAssertEqual(DirtyJSON.fix(":9"), "9")
+        XCTAssertEqual(DirtyJSON.fix(":-"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix(":."), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(":a"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix(":【"), "[]")
+        XCTAssertEqual(DirtyJSON.fix(":："), "")
+        
+        // start from ,
+        XCTAssertEqual(DirtyJSON.fix(",{"), "{}")
+        XCTAssertEqual(DirtyJSON.fix(",}"), "")
+        XCTAssertEqual(DirtyJSON.fix(",]"), "")
+        XCTAssertEqual(DirtyJSON.fix("::"), "")
+        XCTAssertEqual(DirtyJSON.fix(",:"), "")
+        XCTAssertEqual(DirtyJSON.fix(",'"), "")
+        XCTAssertEqual(DirtyJSON.fix("}'"), "")
+        XCTAssertEqual(DirtyJSON.fix(",:`"), "")
+        XCTAssertEqual(DirtyJSON.fix(",0"), "0")
+        XCTAssertEqual(DirtyJSON.fix(",9"), "9")
+        XCTAssertEqual(DirtyJSON.fix(",-"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix(",."), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(",a"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix(",【"), "[]")
+        XCTAssertEqual(DirtyJSON.fix(",："), "")
+        
+        // start from "
+        XCTAssertEqual(DirtyJSON.fix("\"{"), "\"{\"")
+        XCTAssertEqual(DirtyJSON.fix("\"}"), "\"}\"")
+        XCTAssertEqual(DirtyJSON.fix("\"]"), "\"]\"")
+        XCTAssertEqual(DirtyJSON.fix("\":"), "\":\"")
+        XCTAssertEqual(DirtyJSON.fix("\","), "\",\"")
+        XCTAssertEqual(DirtyJSON.fix("\"\""), "\"\"")
+        XCTAssertEqual(DirtyJSON.fix("\"'"), "\"\"")
+        XCTAssertEqual(DirtyJSON.fix("\"`"), "\"\"")
+        XCTAssertEqual(DirtyJSON.fix("\"0"), "\"0\"")
+        XCTAssertEqual(DirtyJSON.fix("\"9"), "\"9\"")
+        XCTAssertEqual(DirtyJSON.fix("\"-"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("\"."), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix("\"a"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("\"【"), "\"【\"")
+        XCTAssertEqual(DirtyJSON.fix("\"："), "\"：\"")
     }
     
     func test1() {

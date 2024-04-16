@@ -1,6 +1,5 @@
 import XCTest
 @testable import DirtyJSON
-@testable import SwiftyJSON
 
 final class DirtyJSONTests: XCTestCase {
     func test1() {

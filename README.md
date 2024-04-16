@@ -59,7 +59,7 @@ print(DirtyJSON.fix("{\"test\": \"each \n on \n new \n line\"}"))
 
 ```swift
 import DirtyJSON
-const jsonDataWithComments = """
+let jsonDataWithComments = """
 {
     // This is a comment
     "name": "John",
@@ -71,7 +71,7 @@ const jsonDataWithComments = """
     "age": 30
 }
 """;
-const fixedData = DirtyJSON.fix(jsonDataWithComments)
+let fixedData = DirtyJSON.fix(jsonDataWithComments)
 print(fixedData)
 // output: {"name":"John","age":30}
 ```
@@ -80,13 +80,13 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const jsonDataWithTrailingCommas = """
+let jsonDataWithTrailingCommas = """
 {
     "name": "John",
     "age": 30, // Notice this trailing comma
 }
 """;
-const fixedData = DirtyJSON.fix(jsonDataWithTrailingCommas)
+let fixedData = DirtyJSON.fix(jsonDataWithTrailingCommas)
 print(fixedData)
 // output: {"name":"John","age":30}
 ```
@@ -95,7 +95,7 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const jsonDataWithMismatch = """
+let jsonDataWithMismatch = """
 {
     "name": "John",
     "age": 30,
@@ -105,7 +105,7 @@ const jsonDataWithMismatch = """
     } // this '}' should be ']'
 】// this abnormal square bracket  should be '}'
 """;
-const fixedData = DirtyJSON.fix(jsonDataWithMismatch)
+let fixedData = DirtyJSON.fix(jsonDataWithMismatch)
 print(fixedData)
 // output: {"name":"John","age":30,"friends":["Alice","Bob"]}
 ```
@@ -114,7 +114,7 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const unfinishedJsonData = """
+let unfinishedJsonData = """
 {
     "name": "John",
     "age": 30,
@@ -122,7 +122,7 @@ const unfinishedJsonData = """
         "Alice",
         "Bob",
 """
-const fixedData = DirtyJSON.fix(unfinishedJsonData)
+let fixedData = DirtyJSON.fix(unfinishedJsonData)
 print(fixedData)
 // output: {"name":"John","age":30,"friends":["Alice","Bob"]}
 ```
@@ -131,8 +131,8 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const improperlyWrittenJSON = "},{「a」:1,,b:[2,,“3”:},]},";
-const fixedData = DirtyJSON.fix(jsonDataWithCommas)
+let improperlyWrittenJSON = "},{「a」:1,,b:[2,,“3”:},]},";
+let fixedData = DirtyJSON.fix(improperlyWrittenJSON)
 print(fixedData)
 // output: {"a":1,"b":[2,"3"]}
 ```
@@ -205,7 +205,7 @@ print(DirtyJSON.fix("{\"test\": \"each \n on \n new \n line\"}"))
 
 ```swift
 import DirtyJSON
-const jsonDataWithComments = “”“
+let jsonDataWithComments = """
 {
     // 这个是单行注释
     "name": "小明",
@@ -216,8 +216,8 @@ const jsonDataWithComments = “”“
     */
     "age": 30
 }
-“”“;
-const fixedData = DirtyJSON.fix(jsonDataWithComments)
+""";
+let fixedData = DirtyJSON.fix(jsonDataWithComments)
 print(fixedData)
 // 输出: {"name":"小明","age":30}
 ```
@@ -226,13 +226,13 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const jsonDataWithTrailingCommas = """
+let jsonDataWithTrailingCommas = """
 {
     "name": "小明",
     "age": 30, // 注意这个逗号将被删除
 }
 """;
-const fixedData = DirtyJSON.fix(jsonDataWithTrailingCommas)
+let fixedData = DirtyJSON.fix(jsonDataWithTrailingCommas)
 print(fixedData)
 // 输出: {"name":"小明","age":30}
 ```
@@ -241,7 +241,7 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const jsonDataWithMismatch = """
+let jsonDataWithMismatch = """
 {
     "name": "小明",
     "age": 30,
@@ -251,7 +251,7 @@ const jsonDataWithMismatch = """
     } // 这里的 '}' 应该是 ']'
 】// 这里的 '】' 应该是 '}'
 """;
-const fixedData = DirtyJSON.fix(jsonDataWithMismatch)
+let fixedData = DirtyJSON.fix(jsonDataWithMismatch)
 print(fixedData)
 // 输出: {"name":"小明","age":30,"friends":["小红","小刚"]}
 ```
@@ -260,7 +260,7 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const unfinishedJsonData = """
+let unfinishedJsonData = """
 {
     "name": "小明",
     "age": 30,
@@ -268,7 +268,7 @@ const unfinishedJsonData = """
         "小红",
         "小刚",
 """;
-const fixedData = DirtyJSON.fix(unfinishedJsonData)
+let fixedData = DirtyJSON.fix(unfinishedJsonData)
 print(fixedData)
 // 输出: {"name":"小明","age":30,"friends":["小红","小刚"]}
 ```
@@ -277,8 +277,8 @@ print(fixedData)
 
 ```swift
 import DirtyJSON
-const improperlyWrittenJSON = "},{「a」:1,,b:[2,,“3”:},]},";
-const fixedData = DirtyJSON.fix(jsonDataWithCommas)
+let improperlyWrittenJSON = "},{「a」:1,,b:[2,,“3”:},]},";
+let fixedData = DirtyJSON.fix(improperlyWrittenJSON)
 print(fixedData)
 // 输出: {"a":1,"b":[2,"3"]}
 ```

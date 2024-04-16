@@ -2,10 +2,48 @@ import XCTest
 @testable import DirtyJSON
 
 final class DirtyJSONTests: XCTestCase {
-    func test1() {
+    func testFixChar0() {
         XCTAssertEqual(DirtyJSON.fix(""), "")
-        XCTAssertEqual(DirtyJSON.fix("{}"), "{}")
-        XCTAssertEqual(DirtyJSON.fix("[]"), "[]")
+    }
+    
+    func testFixChar1() {
+        XCTAssertEqual(DirtyJSON.fix(" "), "");
+        XCTAssertEqual(DirtyJSON.fix("{"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("["), "[]");
+        XCTAssertEqual(DirtyJSON.fix("}"), "");
+        XCTAssertEqual(DirtyJSON.fix("]"), "");
+        XCTAssertEqual(DirtyJSON.fix(":"), "");
+        XCTAssertEqual(DirtyJSON.fix(","), "");
+        XCTAssertEqual(DirtyJSON.fix("'"), "");
+        XCTAssertEqual(DirtyJSON.fix("\""), "");
+        XCTAssertEqual(DirtyJSON.fix("`"), "");
+        XCTAssertEqual(DirtyJSON.fix("0"), "0");
+        XCTAssertEqual(DirtyJSON.fix("9"), "9");
+        XCTAssertEqual(DirtyJSON.fix("-"), "\"-\"");
+        XCTAssertEqual(DirtyJSON.fix("."), "\".\"");
+        XCTAssertEqual(DirtyJSON.fix("a"), "\"a\"");
+        XCTAssertEqual(DirtyJSON.fix("e"), "\"e\"");
+        XCTAssertEqual(DirtyJSON.fix("【"), "[]");
+        XCTAssertEqual(DirtyJSON.fix("】"), "");
+        XCTAssertEqual(DirtyJSON.fix("："), "");
+    }
+    
+    func testFixChar2() {
+        XCTAssertEqual(DirtyJSON.fix("{{"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{}"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{]"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{:"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{,"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{\""), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{'"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("{`"), "{}");
+        XCTAssertEqual(DirtyJSON.fix("[}"), "[]");
+        XCTAssertEqual(DirtyJSON.fix("[]"), "[]");
+        XCTAssertEqual(DirtyJSON.fix("[["), "[[]]");
+        XCTAssertEqual(DirtyJSON.fix("}}"), "");
+    }
+    
+    func test1() {
         XCTAssertEqual(DirtyJSON.fix("tRue"), "true")
         XCTAssertEqual(DirtyJSON.fix("FalSE"), "false")
         XCTAssertEqual(DirtyJSON.fix("nULl"), "null")
@@ -13,10 +51,6 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix("{  "), "{}")
         XCTAssertEqual(DirtyJSON.fix("  {"), "{}")
         XCTAssertEqual(DirtyJSON.fix("  {  "), "{}")
-        XCTAssertEqual(DirtyJSON.fix("}"), "")
-        XCTAssertEqual(DirtyJSON.fix("["), "[]")
-        XCTAssertEqual(DirtyJSON.fix("]"), "")
-        XCTAssertEqual(DirtyJSON.fix(":"), "")
         XCTAssertEqual(DirtyJSON.fix("{{}}"), "{}")
         XCTAssertEqual(DirtyJSON.fix("[[]]"), "[[]]")
         XCTAssertEqual(DirtyJSON.fix("[[], []]"), "[[],[]]")
@@ -127,6 +161,9 @@ final class DirtyJSONTests: XCTestCase {
     }
 
     static var allTests = [
+        ("testFixChar0", testFixChar0),
+        ("testFixChar1", testFixChar1),
+        ("testFixChar2", testFixChar2),
         ("test1", test1),
         ("testIncomplete", testIncomplete),
         ("testFix1", testFix1),

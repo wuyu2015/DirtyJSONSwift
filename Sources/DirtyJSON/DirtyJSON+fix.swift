@@ -40,8 +40,20 @@ extension DirtyJSON {
             case "\"":
                 // encounter quote
                 iterator.set("\"")
-                skipString(iterator)
-                iterator.set("\"")
+                // record old index
+                let index0 = iterator.index;
+                // find next '"'
+                skipString(iterator);
+                // new index
+                let index1 = iterator.index;
+                if (index0 == index1) {
+                    // not found
+                    iterator.set("");
+                } else {
+                    // found, delete '"' and append '"' to last char
+                    iterator.array[index1 - 1] = iterator.array[index1 - 1] + "\"";
+                    iterator.set("");
+                }
             case "{":
                 // encounter '{'
                 stack.append((index: iterator.index, value: "{"))

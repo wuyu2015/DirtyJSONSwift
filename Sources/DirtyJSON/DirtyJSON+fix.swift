@@ -12,6 +12,30 @@ extension DirtyJSON {
             let token = nextToken(iterator)
             let peekPrevResult = iterator.peekPrev()
             
+            // when inObjectKey
+            var needContinue = false
+            if (inObjectKey) {
+                switch (token) {
+                case "\"", "}", ":", nil:
+                        break;
+                case "{", "[", "]", ",":
+                        // encounter '{{' or '{[' or '{,' , delete the last char
+                        iterator.set("");
+                        needContinue = true;
+                default:
+                    // encounter non-token char that must be quoted
+                    // add leading quote
+                    iterator.set("\"" + token!);
+                    // add trailing quote
+                    iterator.set(skipUntilQuotation(iterator)! + "\"");
+                    needContinue = true;
+                }
+            }
+            if (needContinue) {
+                continue
+            }
+
+            // not inObjectKey
             switch token {
             case "\"":
                 // encounter quote
@@ -20,26 +44,16 @@ extension DirtyJSON {
                 iterator.set("\"")
             case "{":
                 // encounter '{'
-                if (inObjectKey) {
-                    // encounter '{{', delete the last '{'
-                    iterator.set("")
-                    break
-                }
                 stack.append((index: iterator.index, value: "{"))
                 inObjectKey = true
                 inObjectValue = false
             case "[":
                 // encounter '['
-                if (inObjectKey) {
-                    // encounter '{[', delete '['
-                    iterator.set("")
-                    break
-                }
                 stack.append((index: iterator.index, value: "["))
                 inObjectKey = false
                 inObjectValue = false
-            case "}":
-                // encounter '}'
+            case "}", "]":
+                // encounter close token '}' or ']'
                 switch peekPrevResult.lastChar {
                 case ",":
                     // encounter ',}', delete the trailing comma
@@ -60,39 +74,16 @@ extension DirtyJSON {
                     iterator.set("")
                     break
                 }
-                if stack.popLast()?.value == "[" {
-                    // '}' should be ']' here
-                    iterator.set("]")
-                }
-                inObjectKey = false
-                inObjectValue = false
-            case "]":
-                // encounter ']'
-                if (inObjectKey) {
-                    // encounter '{]', delete ']'
-                    iterator.set("")
-                    break
-                }
-                switch peekPrevResult.lastChar {
-                case ",":
-                    // encounter ',]', delete the trailing comma
-                    iterator.array[peekPrevResult.index] = ""
-                case nil:
-                    // encounter something like '   ]', delete it
-                    for i in 0...iterator.index {
-                        iterator.array[i] = ""
-                    }
-                default:
-                    break
-                }
-                if stack.isEmpty {
-                    // ']' is invalid here, delete it
-                    iterator.set("")
-                    break
-                }
-                if stack.popLast()!.value == "{" {
-                    // ']' should be '}' here
+                if stack.popLast()?.value == "{" {
+                    // close token should be '}'
                     iterator.set("}")
+                    if peekPrevResult.lastChar == ":" {
+                        // encounter '...:', change it to '...:null'
+                        iterator.array[peekPrevResult.index] = peekPrevResult.value! + "null"
+                    }
+                } else {
+                    // close token should be ']'
+                    iterator.set("]")
                 }
                 inObjectKey = false
                 inObjectValue = false
@@ -108,11 +99,6 @@ extension DirtyJSON {
                 inObjectValue = true
             case ",":
                 // encounter ','
-                if (inObjectKey) {
-                    // encounter '{,', delete ','
-                    iterator.set("")
-                    break
-                }
                 switch peekPrevResult.lastChar {
                 case "{", "[", ":", ",":
                     // encounter '{,' or '[,' or ':,' or ',,', delete it
@@ -173,15 +159,6 @@ extension DirtyJSON {
                 return iterator.toString()
             default:
                 // encounter non-token char
-                // in object key field
-                if inObjectKey {
-                    // chars in object key field must be quoted
-                    // add leading quote
-                    iterator.set("\"" + token!)
-                    // add trailing quote
-                    iterator.set(skipUntilQuotation(iterator)! + "\"")
-                    break;
-                }
                 // not in object key field
                 // prepare to get value from index
                 let valueIndex0 = iterator.index

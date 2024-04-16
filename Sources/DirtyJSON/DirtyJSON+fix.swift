@@ -13,10 +13,10 @@ extension DirtyJSON {
             let peekPrevResult = iterator.peekPrev()
             
             switch token {
-            case "\"", "'", "`", "”", "’", "·", "」", "﹂", "』", "﹄":
-                // encounter quote mark
+            case "\"":
+                // encounter quote
                 iterator.set("\"")
-                skipString(iterator, token!)
+                skipString(iterator)
                 iterator.set("\"")
             case "{":
                 // encounter '{'
@@ -192,12 +192,8 @@ extension DirtyJSON {
             // find a struct token
             let char = iterator.next()
             switch char {
-            case "“", "”": return "”"
-            case "‘", "’": return "’"
-            case "「", "」": return "」"
-            case "﹁", "﹂": return "﹂"
-            case "『", "』": return "』"
-            case "﹃", "﹄": return "﹄"
+            case "\"", "'", "`", "“", "”", "‘", "’", "「", "」", "﹁", "﹂", "『", "』", "﹃", "﹄":
+                return "\""
             case "【", "〔":
                 iterator.set("[")
                 return "["
@@ -250,7 +246,7 @@ extension DirtyJSON {
         return nil
     }
 
-    static func skipString(_ iterator: StringIterator, _ quote: String) {
+    static func skipString(_ iterator: StringIterator) {
         while !iterator.done() {
             let char = iterator.next()!
             switch char {
@@ -259,25 +255,24 @@ extension DirtyJSON {
             case "\t":
                 iterator.set("\\t")
             case "\"":
-                switch quote {
-                case "'", "`":
-                    iterator.set("\\\"")
-                default:
-                    if hasTokenAfterQuote(iterator) {
-                        return
-                    }
-                    iterator.set("\\\"")
+                // encounter quote
+                if (hasTokenAfterQuote(iterator)) {
+                    // string end
+                    return
+                }
+                iterator.set("\\\"")
+            case "'", "`", "“", "”", "‘", "’", "「", "」", "﹁", "﹂", "『", "』", "﹃", "﹄":
+                // encounter abnormal quote, and there is a trailing token, change it to '"'
+                if (hasTokenAfterQuote(iterator)) {
+                    iterator.set("\"");
+                    return
                 }
             case "\\":
                 break
             default:
+                // encounter invisible char, delete it
                 if isInvisible(char) {
                     iterator.set("")
-                }
-                // encountering quotation mark
-                if char == quote && hasTokenAfterQuote(iterator) {
-                    iterator.set("\"")
-                    return
                 }
             }
         }

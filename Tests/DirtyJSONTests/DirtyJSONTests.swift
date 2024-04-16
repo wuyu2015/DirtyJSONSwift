@@ -17,6 +17,8 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix("["), "[]")
         XCTAssertEqual(DirtyJSON.fix("]"), "")
         XCTAssertEqual(DirtyJSON.fix(":"), "")
+        XCTAssertEqual(DirtyJSON.fix("{{}}"), "{}")
+        XCTAssertEqual(DirtyJSON.fix("[[]]"), "[[]]")
 
         XCTAssertEqual(DirtyJSON.fix("{\"a\": 1}"), "{\"a\":1}")
         XCTAssertEqual(DirtyJSON.fix("{'a': 1}"), "{\"a\":1}")
@@ -38,8 +40,8 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix(
             "[1, 2, 3, \"a\", \"b\", \"c\", abc, TrUe, False, NULL, 1.23e10, 123abc, { 123:123 },]"),
             "[1,2,3,\"a\",\"b\",\"c\",\"abc\",true,false,null,1.23e10,\"123abc\",{\"123\":123}]")
-        XCTAssertEqual(DirtyJSON.fix("{\"a\": 1, {\"b\": 2]]"), "{\"a\":1,{\"b\":2}}")
-        XCTAssertEqual(DirtyJSON.fix("{,,,\"a\",,:, 1,,, {,,,\"b\",: 2,,,],,,],,,"), "{\"a\":1,{\"b\":2}}")
+        XCTAssertEqual(DirtyJSON.fix("{\"a\": 1, {\"b\": 2]]"), "{\"a\":1,\"b\":2}")
+        XCTAssertEqual(DirtyJSON.fix("{,,,\"a\",,:, 1,,, {,,,\"b\",: 2,,,],,,],,,"), "{\"a\":1,\"b\":2}")
         XCTAssertEqual(DirtyJSON.fix("{\"a\": 1, b: [2, “3”:}]"), "{\"a\":1,\"b\":[2,\"3\"]}")
         XCTAssertEqual(DirtyJSON.fix("},{「a」:1,,b:[2,,“3”:},]},"), "{\"a\":1,\"b\":[2,\"3\"]}")
         XCTAssertEqual(DirtyJSON.fix("[\"quotes in \"quotes\" in quotes\"]"), "[\"quotes in \\\"quotes\\\" in quotes\"]")

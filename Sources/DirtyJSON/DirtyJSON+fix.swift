@@ -20,6 +20,11 @@ extension DirtyJSON {
                 iterator.set("\"")
             case "{":
                 // encounter '{'
+                if (inObjectKey) {
+                    // encounter '{{', delete the last '{'
+                    iterator.set("")
+                    break
+                }
                 stack.append((index: iterator.index, value: "{"))
                 inObjectKey = true
                 inObjectValue = false

@@ -140,6 +140,97 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix("\"a"), "\"a\"")
         XCTAssertEqual(DirtyJSON.fix("\"【"), "\"【\"")
         XCTAssertEqual(DirtyJSON.fix("\"："), "\"：\"")
+        
+        // start from `
+        XCTAssertEqual(DirtyJSON.fix("`{"), "\"{\"")
+        XCTAssertEqual(DirtyJSON.fix("`}"), "\"}\"")
+        XCTAssertEqual(DirtyJSON.fix("`]"), "\"]\"")
+        XCTAssertEqual(DirtyJSON.fix("`:") , "\":\"")
+        XCTAssertEqual(DirtyJSON.fix("`,"), "\",\"")
+        XCTAssertEqual(DirtyJSON.fix("`\""), "\"\"")
+        XCTAssertEqual(DirtyJSON.fix("`\'"), "\"\"")
+        XCTAssertEqual(DirtyJSON.fix("``"), "\"\"")
+        XCTAssertEqual(DirtyJSON.fix("`0"), "\"0\"")
+        XCTAssertEqual(DirtyJSON.fix("`9"), "\"9\"")
+        XCTAssertEqual(DirtyJSON.fix("`-"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("`.`"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix("`a"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("`【"), "\"【\"")
+        XCTAssertEqual(DirtyJSON.fix("`："), "\"：\"")
+        
+        // start from 0
+        XCTAssertEqual(DirtyJSON.fix("0{"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0}"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0]"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0:"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0,"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0\""), "0")
+        XCTAssertEqual(DirtyJSON.fix("0'"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0`"), "0")
+        XCTAssertEqual(DirtyJSON.fix("00"), "00") // TODO: should be 0
+        XCTAssertEqual(DirtyJSON.fix("09"), "09") // TODO: should be 9
+        XCTAssertEqual(DirtyJSON.fix("0-"), "\"0-\"")
+        XCTAssertEqual(DirtyJSON.fix("0."), "0.") // TODO: should be 0
+        XCTAssertEqual(DirtyJSON.fix("0a"), "\"0a\"")
+        XCTAssertEqual(DirtyJSON.fix("0【"), "0")
+        XCTAssertEqual(DirtyJSON.fix("0:"), "0")
+        
+        // start from 9
+        XCTAssertEqual(DirtyJSON.fix("90"), "90")
+        XCTAssertEqual(DirtyJSON.fix("99"), "99")
+        
+        // start from -
+        XCTAssertEqual(DirtyJSON.fix("-{"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-}"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-]"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-:"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-,"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-\""), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-'"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-`"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-0"), "-0") // TODO: should be 0
+        XCTAssertEqual(DirtyJSON.fix("-9"), "-9")
+        XCTAssertEqual(DirtyJSON.fix("--"), "\"--\"")
+        XCTAssertEqual(DirtyJSON.fix("-."), "\"-.\"")
+        XCTAssertEqual(DirtyJSON.fix("-a"), "\"-a\"")
+        XCTAssertEqual(DirtyJSON.fix("-【"), "\"-\"")
+        XCTAssertEqual(DirtyJSON.fix("-:"), "\"-\"")
+        
+        // start from .
+        XCTAssertEqual(DirtyJSON.fix(".{"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".}"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".]"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".:"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".,") , "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".\""), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".'"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".."), "\"..\"")
+        XCTAssertEqual(DirtyJSON.fix(".0"), ".0") // TODO: should be 0
+        XCTAssertEqual(DirtyJSON.fix(".9"), ".9") // TODO: should be 0.9
+        XCTAssertEqual(DirtyJSON.fix(".-"), "\".-\"")
+        XCTAssertEqual(DirtyJSON.fix(".a"), "\".a\"")
+        XCTAssertEqual(DirtyJSON.fix(".【"), "\".\"")
+        XCTAssertEqual(DirtyJSON.fix(".:"), "\".\"")
+        
+        // start from a
+        XCTAssertEqual(DirtyJSON.fix("a{"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a}"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a]"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a:"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a,"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a\""), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a'"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a."), "\"a.\"")
+        XCTAssertEqual(DirtyJSON.fix("a0"), "\"a0\"")
+        XCTAssertEqual(DirtyJSON.fix("a9"), "\"a9\"")
+        XCTAssertEqual(DirtyJSON.fix("a-"), "\"a-\"")
+        XCTAssertEqual(DirtyJSON.fix("a."), "\"a.\"")
+        XCTAssertEqual(DirtyJSON.fix("aa"), "\"aa\"")
+        XCTAssertEqual(DirtyJSON.fix("a【"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a:"), "\"a\"")
+        XCTAssertEqual(DirtyJSON.fix("a"), "\"a\"")
+
+
     }
     
     func test1() {

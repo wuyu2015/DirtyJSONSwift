@@ -12,6 +12,26 @@ extension DirtyJSON {
             let token = nextToken(iterator)
             let peekPrevResult = iterator.peekPrev()
             
+            // update status by `peekPrevResult`
+            switch peekPrevResult.lastChar {
+                case "{":
+                    inObjectKey = true
+                    inObjectValue = false
+                case "}":
+                    inObjectValue = false
+                case ":":
+                    inObjectKey = false
+                    // only ':' can toggle `inObjectValue` to true
+                    inObjectValue = true
+                case ",":
+                    if inObjectValue {
+                        inObjectKey = true
+                        inObjectValue = false
+                    }
+                default:
+                    break
+            }
+            
             // when inObjectKey
             var needContinue = false
             if (inObjectKey) {
@@ -21,14 +41,14 @@ extension DirtyJSON {
                 case "{", "[", "]", ",":
                         // {' or '[' or ']' or ',' is not allow when inObjectKey
                         iterator.set("");
-                        needContinue = true;
+                        needContinue = true
                 default:
                     // encounter non-token char that must be quoted
                     // add leading quote
-                    iterator.set("\"" + token!);
+                    iterator.set("\"" + token!)
                     // add trailing quote
-                    iterator.set(skipUntilQuotation(iterator)! + "\"");
-                    needContinue = true;
+                    iterator.set(skipUntilQuotation(iterator)! + "\"")
+                    needContinue = true
                 }
             }
             if (needContinue) {
@@ -39,50 +59,50 @@ extension DirtyJSON {
             switch token {
             case "\"":
                 // encounter quote
-                iterator.set("\"")
-                // record old index
-                let index0 = iterator.index;
-                // find next '"'
-                skipString(iterator);
-                // new index
-                let index1 = iterator.index;
-                if (index0 == index1) {
-                    // not found
-                    iterator.set("");
-                } else if (!iterator.done()) {
-                    // found, delete '"' and append '"' to last char
-                    iterator.array[index1 - 1] = iterator.array[index1 - 1] + "\"";
-                    iterator.set("");
-                } else {
-                    // end of iterator
-                    if (iterator.get() != "\"") {
-                        iterator.array[iterator.array.count - 1] = iterator.array.last! + "\"";
+                switch (peekPrevResult.lastChar) {
+                case ",", "{", "[", ":", nil:
+                    iterator.set("\"")
+                    // record old index
+                    let index0 = iterator.index
+                    // find next '"'
+                    skipString(iterator)
+                    // new index
+                    let index1 = iterator.index
+                    if (index0 == index1) {
+                        // not found
+                        iterator.set("")
+                    } else if (!iterator.done()) {
+                        // found, delete '"' and append '"' to last char
+                        iterator.array[index1 - 1] = iterator.array[index1 - 1] + "\""
+                        iterator.set("")
+                    } else {
+                        // end of iterator
+                        if (iterator.get() != "\"") {
+                            iterator.array[iterator.array.count - 1] = iterator.array.last! + "\""
+                        }
                     }
+                default:
+                    iterator.set("")
+                    break
                 }
-            case "{":
-                // encounter '{'
-                stack.append((index: iterator.index, value: "{"))
-                inObjectKey = true
-                inObjectValue = false
-            case "[":
-                // encounter '['
-                stack.append((index: iterator.index, value: "["))
-                inObjectKey = false
-                inObjectValue = false
+            case "{", "[":
+                // encounter '{' or '['
+                switch (peekPrevResult.lastChar) {
+                case ",", "[", ":", nil:
+                    stack.append((index: iterator.index, value: token!.first!))
+                default:
+                    iterator.set("")
+                    break
+                }
             case "}", "]":
                 // encounter close token '}' or ']'
                 switch peekPrevResult.lastChar {
                 case ",":
                     // encounter ',}', delete the trailing comma
                     iterator.array[peekPrevResult.index] = ""
-                case ":":
-                    // encounter '...:', change it to '...:null'
-                    iterator.array[peekPrevResult.index] += "null"
                 case nil:
                     // encounter something like '   }', delete it
-                    for i in 0...iterator.index {
-                        iterator.array[i] = ""
-                    }
+                    iterator.set("")
                 default:
                     break
                 }
@@ -111,9 +131,6 @@ extension DirtyJSON {
                     iterator.set("")
                     break
                 }
-                inObjectKey = false
-                // only ':' can toggle `inObjectValue` to true
-                inObjectValue = true
             case ",":
                 // encounter ','
                 switch peekPrevResult.lastChar {
@@ -141,10 +158,7 @@ extension DirtyJSON {
                             iterator.array[iterator.index + 1] = ""
                         }
                     default:
-                        // encounter 'otherChar,'
-                        // ',' can toggle `inObjectKey` to true
-                        inObjectKey = !stack.isEmpty && stack[stack.count - 1].value == "{"
-                        inObjectValue = false
+                        break
                     }
                 }
             case nil:
@@ -323,7 +337,7 @@ extension DirtyJSON {
     static func skipUntilToken(_ iterator: StringIterator) {
         while true {
             switch nextToken(iterator) {
-            case "{", "}", "[", "]", ":", ",", nil:
+            case "{", "}", "[", "]", ":", ",", "\"", nil:
                 // move iterator.index back to visible char
                 iterator.prev()
                 return

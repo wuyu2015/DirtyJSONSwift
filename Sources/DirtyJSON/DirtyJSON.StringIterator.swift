@@ -50,6 +50,10 @@ extension DirtyJSON {
             array[index] = value // Notice: unsafe
         }
         
+        func append(_ value: String) {
+            array[index] = array[index] + value // Notice: unsafe
+        }
+        
         func done() -> Bool {
             return index >= array.count - 1
         }

@@ -76,7 +76,7 @@ extension DirtyJSON {
                         iterator.set("")
                     }
                 default:
-                    break
+                    return char
                 }
             case "":
                 // char will be empty if we delete it before
@@ -121,6 +121,7 @@ extension DirtyJSON {
                     return
                 }
             case "\\":
+                iterator.next()
                 break
             default:
                 // encounter invisible char, delete it
@@ -161,7 +162,7 @@ extension DirtyJSON {
 
     static func skipUntilToken(_ iterator: StringIterator) {
         while true {
-            switch nextToken(iterator) {
+            switch nextToken(iterator, deleteWhitespace: false) {
             case "{", "}", "[", "]", ":", ",", "\"", nil:
                 // move iterator.index back to visible char
                 iterator.prev()
@@ -263,7 +264,7 @@ extension DirtyJSON {
             return
         }
 
-        if status.inObject() && !status.expectOpenToken {
+        if status.inObject() && !status.hasObjectKey {
             // encounter non-token char that must be quoted
             // add leading quote
             iterator.set("\"" + token)

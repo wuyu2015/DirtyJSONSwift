@@ -288,6 +288,11 @@ final class DirtyJSONTests: XCTestCase {
         XCTAssertEqual(DirtyJSON.fix("{a: "), "{\"a\":null}")
     }
     
+    func testStrings() {
+        let s = "{\"s\":\"The term \\\"antiglare\\\" is derived from the combination of \\\"anti-\\\" meaning against or opposed to, and \\\"glare\\\" referring to a harsh, bright light that causes discomfort. The concept originated in the field of optics and has since been applied to various industries to improve visual comfort.\"}";
+        XCTAssertEqual(DirtyJSON.fix(s), s)
+    }
+    
     func testFix1() {
         XCTAssertEqual(DirtyJSON.fix("{ test: 'this is a test', 'number': 1.23e10 }"), "{\"test\":\"this is a test\",\"number\":1.23e10}")
     }
@@ -358,6 +363,7 @@ final class DirtyJSONTests: XCTestCase {
         ("testFixChar2", testFixChar2),
         ("test1", test1),
         ("testIncomplete", testIncomplete),
+        ("testStrings", testStrings),
         ("testFix1", testFix1),
         ("testFix2", testFix2),
         ("testFix3", testFix3),
